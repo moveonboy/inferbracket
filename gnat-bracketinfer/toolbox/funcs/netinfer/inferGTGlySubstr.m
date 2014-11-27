@@ -131,9 +131,16 @@ if(isSubstrValid)
     
     % Check if need to add bracket.
     if(length(substrSpecies)>1)&&(~prodbracket)&&(substrbracket)
-        substrSpecies = isaddbracket(substrSpecies,numSubstr,enzObj);
+        substrSpecies = isaddbracket(substrSpecies,numSubstr);
     elseif(prodbracket)&&(length(substrSpecies)>1)
-        substrSpecies = reorgnizestructure(substrSpecies,enzObj);
+        isallSubstrsame = checkifsame(substrSpecies);
+        if(~isallSubstrsame)
+            substrSpecies = reorgnizestructure(substrSpecies);
+        else
+            newspecies = substrSpecies.get(1);
+            substrSpecies = CellArrayList;
+            substrSpecies.add(newspecies);
+        end
     end
 end
 end
@@ -576,7 +583,17 @@ for j = 1 : length(allnreResidues)
 end
 end
 
-
+function isallSubstrsame = checkifsame(substrSpecies)
+isallSubstrsame = 1;
+glycanStruct1   = substrSpecies.get(1).glycanStruct;
+for i = 2 : length(substrSpecies)
+    ithglycanStruct = substrSpecies.get(i).glycanStruct;
+    if(~glycanStruct1.equalStruct(ithglycanStruct))
+        isallSubstrsame = 0;
+        break
+    end
+end
+end
 
 
 
